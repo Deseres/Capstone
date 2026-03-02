@@ -10,7 +10,7 @@ variables:
   terraformVersion: '1.6.6'
   buildConfiguration: 'Release'
   webAppName: 'capstone-webapp'
-  webAppProject: 'code/CapstoneWebApp/CapstoneWebApp'
+  webAppProject: 'code/CapstoneWebApp/CapstoneWebApp.csproj'
 
 stages:
   # 1. Infrastructure Planning
@@ -60,4 +60,64 @@ stages:
           - task: TerraformTaskV4@4
             displayName: 'Terraform Init'
             inputs:
-              provider: 'az
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: $(terraformWorkingDir)
+              backendServiceArm: $(azureServiceConnection)
+              backendAzureRmResourceGroupName: 'LabCommon'
+              backendAzureRmStorageAccountName: 'common71977'
+              backendAzureRmContainerName: 'terraform'
+              backendAzureRmKey: 'capstone.tfstate'
+          - task: TerraformTaskV4@4
+            displayName: 'Terraform Apply'
+            inputs:
+              provider: 'azurerm'
+              command: 'apply'
+              workingDirectory: $(terraformWorkingDir)
+              environmentServiceNameAzureRM: $(azureServiceConnection)
+              commandOptions: '-auto-approve'
+
+  # 3. Application Build
+  - stage: BuildApp
+    displayName: 'Build Web App'
+    dependsOn: TerraformApply
+    jobs:
+      - job: Build
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - checkout: self
+          - task: UseDotNet@2
+            inputs:
+              version: '8.0.x'
+          - task: DotNetCoreCLI@2
+            displayName: 'Publish Web App'
+            inputs:
+              command: 'publish'
+              publishWebProjects: false
+              projects: $(webAppProject)
+              arguments: '-c $(buildConfiguration) -o $(Build.ArtifactStagingDirectory)'
+              zipAfterPublish: true
+          - publish: $(Build.ArtifactStagingDirectory)
+            artifact: webapp-package
+
+  # 4. Application Deployment
+  - stage: DeployApp
+    displayName: 'Deploy to Azure'
+    dependsOn: BuildApp
+    jobs:
+      - job: Deploy
+        pool:
+          vmImage: 'ubuntu-latest'
+        steps:
+          - task: DownloadPipelineArtifact@2
+            inputs:
+              artifact: webapp-package
+              path: $(Pipeline.Workspace)/drop
+          - task: AzureWebApp@1
+            displayName: 'Azure Web App Deploy'
+            inputs:
+              azureSubscription: $(azureServiceConnection)
+              appType: 'webAppLinux'
+              appName: $(webAppName)
+              package: '$(Pipeline.Workspace)/drop/**/*.zip'
