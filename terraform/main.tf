@@ -9,7 +9,7 @@ terraform {
     resource_group_name  = "LabCommon"
     storage_account_name = "common71977"
     container_name       = "terraform"
-    key                  = "Capstone.tfstate"
+    key                  = "capstone.tfstate"
   }
 }
 

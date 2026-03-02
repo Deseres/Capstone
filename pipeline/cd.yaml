@@ -9,8 +9,8 @@ variables:
   azureServiceConnection: 'AzureServiceConnection'
   terraformVersion: '1.6.6'
   buildConfiguration: 'Release'
-  webAppName: 'capstone-webapp'
-  webAppProject: 'code/CapstoneWebApp/CapstoneWebApp.csproj'
+  webAppName: 'capstone-webapp-71977'
+  webAppProject: 'code/CapstoneWebApp/CapstoneWebApp'
 
 stages:
   # 1. Infrastructure Planning
