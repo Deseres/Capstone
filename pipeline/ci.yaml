@@ -5,7 +5,7 @@ trigger:
 
 variables:
   # Path to your web app project folder
-  webAppPath: 'code/CapstoneWebApp'
+  webAppPath: 'code/CapstoneWebApp/CapstoneWebApp'
   terraformPath: 'terraform'
 
 stages:
