@@ -1,0 +1,50 @@
+trigger:
+  branches:
+    include:
+      - develop
+
+variables:
+  # Path to your web app project folder
+  webAppPath: 'code/CapstoneWebApp'
+  terraformPath: 'terraform'
+
+stages:
+- stage: VerifyCode
+  displayName: 'App Verification'
+  jobs:
+  - job: BuildApp
+    displayName: '.NET 8 Compile'
+    pool:
+      vmImage: 'ubuntu-latest' 
+    steps:
+    - checkout: self
+
+    - task: UseDotNet@2
+      inputs:
+        version: '8.0.x'
+
+    # This only checks if the code compiles without creating a deployment package
+    - script: dotnet build $(webAppPath) --configuration Release
+      displayName: 'Dotnet Build'
+
+- stage: TerraformValidate
+  displayName: 'Terraform Validation'
+  dependsOn: VerifyCode
+  jobs:
+  - job: Validate
+    displayName: 'Syntax & Lint'
+    pool:
+      vmImage: 'ubuntu-latest'
+    steps:
+    - checkout: self
+
+    - task: TerraformInstaller@1
+      inputs:
+        terraformVersion: '1.6.6'
+
+    # Backend is set to false because we are only testing the code logic, not the state
+    - script: |
+        cd $(terraformPath)
+        terraform init -backend=false
+        terraform validate
+      displayName: 'Terraform Init and Validate'
