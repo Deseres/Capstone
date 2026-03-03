@@ -41,7 +41,9 @@ app.MapGet("/", async () =>
                 <div style='max-width: 600px; margin: auto; border: 1px solid #ddd; padding: 20px; border-radius: 10px;'>
                     <h1 style='color: #333;'>""{randomQuote.quote}""</h1>
                     <p style='font-style: italic; color: #666;'>— {randomQuote.author}</p>
-                    <button onclick='window.location.reload()'>Get Another Quote</button>
+                    <button style='background-color: red; color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer;' onclick='window.location.reload()'>
+                        Get Another Quote
+                    </button>
                 </div>
             </body>
         </html>";
