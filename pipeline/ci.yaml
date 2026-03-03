@@ -1,7 +1,7 @@
-trigger:
-  branches:
-    include:
-      - develop
+trigger: none
+
+pr:
+  - develop
 
 variables:
   # Path to your web app project folder
