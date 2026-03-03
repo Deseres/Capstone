@@ -21,7 +21,7 @@ provider "azurerm" {
 # Resource Group
 resource "azurerm_resource_group" "capstone" {
   name     = "Capstone71977"
-  location = "polandcentral"
+  location = "swedencentral"
 }
 
 resource "azurerm_cosmosdb_account" "CosmosDBaccount" {
