@@ -64,7 +64,7 @@ data "azurerm_client_config" "current" {}
 
 # Key Vault to store connection string
 resource "azurerm_key_vault" "kv" {
-  name                = "capstone-kv-71977-unique-xyz"
+  name = "capstone-kv-71977-v2"
   location                    = azurerm_resource_group.capstone.location
   resource_group_name         = azurerm_resource_group.capstone.name
   tenant_id                   = data.azurerm_client_config.current.tenant_id
