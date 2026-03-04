@@ -1,9 +1,9 @@
 using CapstoneWebApp;
 using Microsoft.Azure.Cosmos;
 using System.ComponentModel;
+using Microsoft.Extensions.Diagnostics.HealthChecks;
 
 var builder = WebApplication.CreateBuilder(args);
-var app = builder.Build();
 
 // 1. Connection Setup
 // Replace with your connection string from Key Vault/Environment Variables
@@ -13,6 +13,19 @@ string containerId = "quotes-container";
 
 CosmosClient client = new CosmosClient(connectionString);
 Microsoft.Azure.Cosmos.Container container = client.GetContainer(databaseId, containerId);
+
+// Register Cosmos client and container in DI so health checks can use them
+builder.Services.AddSingleton(client);
+builder.Services.AddSingleton(container);
+
+// Register health checks and add the Cosmos DB check
+builder.Services.AddHealthChecks()
+    .AddCheck<CosmosHealthCheck>("cosmos_db");
+
+var app = builder.Build();
+
+// Health endpoint
+app.MapHealthChecks("/health");
 
 app.MapGet("/", async () =>
 {
