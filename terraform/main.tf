@@ -20,7 +20,7 @@ provider "azurerm" {
 
 # Resource Group
 resource "azurerm_resource_group" "capstone" {
-  name     = "Capstone71977"
+  name     = "Capstone"
   location = "polandcentral"
 }
 
