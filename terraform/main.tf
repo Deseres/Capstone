@@ -18,6 +18,10 @@ provider "azurerm" {
   features {}
 }
 
+resource "random_id" "kv_suffix" {
+  byte_length = 4
+}
+
 # Resource Group
 resource "azurerm_resource_group" "capstone" {
   name     = "Capstone"
@@ -64,7 +68,7 @@ data "azurerm_client_config" "current" {}
 
 # Key Vault to store connection string
 resource "azurerm_key_vault" "kv" {
-  name = "capstone-kv-71977-v2"
+  name                = "kv-capstone-${random_id.kv_suffix.hex}"
   location                    = azurerm_resource_group.capstone.location
   resource_group_name         = azurerm_resource_group.capstone.name
   tenant_id                   = data.azurerm_client_config.current.tenant_id
